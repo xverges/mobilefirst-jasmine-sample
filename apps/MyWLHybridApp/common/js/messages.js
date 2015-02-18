@@ -1,3 +1,4 @@
+/* global Messages: true */
 Messages = {
 	// Add here your messages for the default language. 
 	// Generate a similar file with a language suffix containing the translated messages
