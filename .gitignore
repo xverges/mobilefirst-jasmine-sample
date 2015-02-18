@@ -1,0 +1,5 @@
+/bin/
+/apps/*/*/native/
+/.settings/org.eclipse.core.resources.prefs
+
+
