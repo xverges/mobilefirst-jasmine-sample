@@ -1,0 +1,16 @@
+{
+  "name": "MyWLProject",
+  "version": "0.0.1",
+  "description": "Testing a mobilefirst app with jasmine",
+  "keywords": [
+    "mobilefirst",
+    "worklight"
+  ],
+  "author": "Xavier Verges",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jasmine": "^0.8.2",
+    "grunt-contrib-jshint": "^0.11.0"
+  }
+}
