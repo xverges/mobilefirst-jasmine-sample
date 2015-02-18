@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <project name="QUnit test processor" basedir="." default="run-tests">
+
+    <property name="surefire.report.dir.path" location="target${file.separator}surefire-reports" relative="yes"/>
+    <property name="phantom.version" value="1.9.7"/>
+
+    <!-- detect os -->
+    <condition property="mac">
+      <os family="mac" />
+    </condition>
+    <condition property="windows">
+      <os family="windows" />
+    </condition>
+    <condition property="linux">
+      <os family="unix" />
+    </condition>
+
+    <target name="set-common-props">
+      <!-- if ${surefire.report.dir.path} is already absolute, don't prefix it -->
+      <condition property="surefire.report.dir.path.absolute" value="${surefire.report.dir.path}">
+        <matches pattern="^((/.*)|([a-zA-Z]{1}:.*))" string="${surefire.report.dir.path}"/>
+      </condition>
+      <!-- else: -->
+      <property name="surefire.report.dir.path.absolute" location="${user.dir}${file.separator}${surefire.report.dir.path}"/>
+
+    </target>
+
+    <target name="set-os-props" depends="set-os-props-mac,set-os-props-linux,set-os-props-windows">
+      <property name="phantomjs.binary.path.absolute" location="${phantomjs.binary.path}"/>
+    </target>
+
+    <!-- Test under GNU/Linux -->
+    <target name="set-os-props-linux" if="linux">
+        <exec dir="." executable="uname" outputproperty="result">
+            <arg line="-m"/>
+        </exec>
+
+        <!-- String ends in 64 -->
+        <condition property="x64">
+            <matches string="${result}" pattern="^.*64$"/>
+        </condition>
+
+        <condition property="classifier" value="linux-64" else="linux-32">
+            <isset property="x64"/>
+        </condition>
+        <property name="phantomjs.binary.path" value="${user.dir}${file.separator}target${file.separator}phantomjs${file.separator}bin${file.separator}phantomjs"/>
+    </target>
+
+    <!-- Test under Mac OSX -->
+    <target name="set-os-props-mac" if="mac">
+        <property name="classifier" value="macosx"/>
+        <property name="phantomjs.binary.path" value="${user.dir}${file.separator}target${file.separator}phantomjs${file.separator}bin${file.separator}phantomjs"/>
+    </target>
+
+    <!-- Test under MS/Windows-->
+    <target name="set-os-props-windows" unless="unix">
+        <property name="classifier" value="windows"/>
+        <property name="phantomjs.binary.path" value="${user.dir}${file.separator}target${file.separator}phantomjs${file.separator}phantomjs.exe"/>
+    </target> 
+
+    <!-- ant-contrib.jar provides tasks such as the 'foreach' used below -->
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+      <classpath>
+        <pathelement location="ant-contrib-1.0b3.jar"/>
+      </classpath>
+    </taskdef>
+
+    <target name="check-phantom-binary-exists">
+      <available file="${user.dir}${file.separator}target${file.separator}phantomjs" property="phantomjs.already.downloaded"/>
+    </target>
+
+    <target name="get-phantomjs-binary" depends="check-phantom-binary-exists,set-common-props,set-os-props" unless="phantomjs.already.downloaded">
+        <mkdir dir="target/phantomjs"/>
+        <get src="http://central.maven.org/maven2/org/jboss/arquillian/extension/arquillian-phantom-binary/${phantom.version}/arquillian-phantom-binary-${phantom.version}-${classifier}.jar" dest="${user.dir}${file.separator}target${file.separator}phantomjs${file.separator}phantomjs.jar" />
+        <unzip src="${user.dir}${file.separator}target${file.separator}phantomjs${file.separator}phantomjs.jar" dest="${user.dir}${file.separator}target${file.separator}phantomjs" overwrite="true"/>
+    </target>
+
+    <target name="run-test" depends="get-phantomjs-binary">
+
+      <!-- must use relative path to HTML file for Windows, but it works on all platforms -->
+      <property name="html.file.path.relative" value="${html.file.path}" relative="yes"/>
+
+      <chmod file="${phantomjs.binary.path.absolute}" perm="755" />
+
+      <echo message="Executing:  ${phantomjs.binary.path.absolute} run-qunit-phantomjs.js ${html.file.path.relative} ${surefire.report.dir.path.absolute}"/>
+
+        <exec executable="${phantomjs.binary.path.absolute}" failonerror="true" timeout="180000">
+          <arg value="run-qunit-phantomjs.js"/>
+          <arg value="${html.file.path.relative}"/>
+          <arg value="${surefire.report.dir.path.absolute}"/>
+        </exec>
+
+    </target>
+
+    <target name="clean-test-results" depends="set-common-props">
+      <delete failonerror="false">
+        <fileset dir="${surefire.report.dir.path.absolute}" includes="TEST-JavaScript-*"/>
+      </delete>
+    </target>
+
+    <target name="run-tests" depends="clean-test-results">
+
+      <!-- run every *Test.html file under phantomjs -->
+      <!-- do not use parallel="true" due to side effect of foreach setting failOnError="false" -->
+      <foreach target="run-test" param="html.file.path">
+        <path>
+          <fileset dir=".">
+            <include name="**${file.separator}*Test.html"/>
+          </fileset>
+        </path>
+      </foreach>
+
+    </target>
+
+  </project>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<properties>
+		<phantom.version>1.9.7</phantom.version>
+		<!-- prepare phantomjs, run jshint, and run QUnit tests in the specified 
+			phase, which must be 'test' -->
+		<jstests.phase>test</jstests.phase>
+	</properties>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.mycompany</groupId>
+	<artifactId>MyWLProject</artifactId>
+	<version>1.0</version>
+	<packaging>pom</packaging>
+	<name>MyWLProject JS Test execution</name>
+
+	<build>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.cj.jshintmojo</groupId>
+					<artifactId>jshint-maven-plugin</artifactId>
+					<version>1.1</version>
+					<configuration>
+						<version>2.1.9</version>
+						<options>
+							regexdash,
+							browser,
+							devel,
+							jquery,
+							wsh,
+							trailing,
+							sub,
+							expr,
+							strict,
+							unused:false,
+							bitwise,
+							camelcase,
+							curly,
+							eqeqeq,
+							forin,
+							immed,
+							latedef,
+							newcap,
+							noarg,
+							noempty,
+							nonew,
+							quotmark:single,
+							undef,
+							maxparams:3,
+							maxdepth:3,
+							smarttabs:true
+						</options>
+						<globals>$,WL</globals>
+						<directories>
+							<directory>apps/MyWLHybridApp/common/js/</directory>
+						</directories>
+						<excludes>
+							<exclude>apps/MyWLHybridApp/common/js/initOptions.js</exclude>
+							<exclude>apps/MyWLHybridApp/common/js/messages.js</exclude>
+						</excludes>
+						<reporter>jslint</reporter>
+						<reportFile>${project.build.directory}/jshint.xml</reportFile>
+						<failOnError>true</failOnError>
+					</configuration>
+				</plugin>
+			</plugins>
+
+		</pluginManagement>
+
+		<plugins>
+			<!-- jshint -->
+			<plugin>
+				<groupId>com.cj.jshintmojo</groupId>
+				<artifactId>jshint-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>run jshint</id>
+						<goals>
+							<goal>lint</goal>
+						</goals>
+						<phase>${jstests.phase}</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- prepare classpath for closure compiler antrun -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<!-- put phantomjs binary in known location -->
+					<execution>
+						<id>unpack-phantomjs</id>
+						<phase>process-${jstests.phase}-resources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>arquillian-phantom-binary</includeArtifactIds>
+							<outputDirectory>${project.build.directory}/phantomjs</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- This is a test to ensure syntax is valid in all src/main/resources/**/*.js 
+				files. It does not contribute to the built artifact. -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>run JavaScript tests</id>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>${jstests.phase}</phase>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/js-unit-tests.xml" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+
+	<profiles>
+		<profile>
+			<id>notest</id>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+				<jstests.phase>NO_PHASE</jstests.phase>
+			</properties>
+		</profile>
+
+		<profile>
+
+			<id>mac</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.jboss.arquillian.extension</groupId>
+					<artifactId>arquillian-phantom-binary</artifactId>
+					<version>${phantom.version}</version>
+					<classifier>macosx</classifier>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>linux x32</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<os>
+					<family>unix</family>
+					<arch>i386</arch>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.jboss.arquillian.extension</groupId>
+					<artifactId>arquillian-phantom-binary</artifactId>
+					<version>${phantom.version}</version>
+					<classifier>linux-32</classifier>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>linux amd64</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<os>
+					<family>unix</family>
+					<arch>amd64</arch>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.jboss.arquillian.extension</groupId>
+					<artifactId>arquillian-phantom-binary</artifactId>
+					<version>${phantom.version}</version>
+					<classifier>linux-64</classifier>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.jboss.arquillian.extension</groupId>
+					<artifactId>arquillian-phantom-binary</artifactId>
+					<version>${phantom.version}</version>
+					<classifier>windows</classifier>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+</project>
