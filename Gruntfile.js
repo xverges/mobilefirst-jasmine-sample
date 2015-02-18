@@ -17,7 +17,8 @@ module.exports = function(grunt) {
         },
         jasmine: {
             firstApp: {
-                src: firstAppPath + '/common/js/**/*.js',
+                src: [firstAppPath + '/spec/mocks.js',
+                      firstAppPath + '/common/js/**/*.js'],
                 options: {
                     specs: firstAppPath + '/spec/*Spec.js',
                     helpers: firstAppPath + '/spec/*Helper.js'
