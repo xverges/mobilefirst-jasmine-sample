@@ -24,7 +24,7 @@ IBM HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS OR 
     // mock:
     WL.Client.invokeProcedure = function(invocationData, options) {
       options.onSuccess({
-        invocationResults: {
+        invocationResult: {
           isSuccessful: false
         }
       });
