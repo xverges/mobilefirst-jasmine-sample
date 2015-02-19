@@ -10,10 +10,18 @@ module.exports = function(grunt) {
             options: {
                 jshintrc: true
             },
-            all: ['Gruntfile.js', 
-                  'adapters/**/*.js', 
-                  'apps/*/common/js/**/*.js',
-                  'apps/*/spec/*.js']
+            js: {
+                src: ['Gruntfile.js',
+                      'adapters/**/*.js',
+                      'apps/*/common/js/**/*.js',
+                      'apps/*/spec/*.js']
+            },
+            html: {
+                src: ['apps/*/common/**/*.html'],
+                options: {
+                    extract: 'always'
+                }
+            }
         },
         jasmine: {
             firstApp: {

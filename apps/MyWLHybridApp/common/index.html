@@ -19,7 +19,12 @@ IBM HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS OR 
     			<link rel="apple-touch-icon" href="images/apple-touch-icon.png"> 
     		-->
     		<link rel="stylesheet" href="css/main.css">
-    		<script>window.$ = window.jQuery = WLJQ;</script>
+    		<script>
+    			/* jshint ignore:start */
+    			/* Causes a puzzling 'Invalid array length' */
+    			window.$ = window.jQuery = WLJQ;
+    			/* jshint ignore:end */
+    		</script>
     	</head>
     	<body style="display: none;">
     		<!--application UI goes here-->
