@@ -28,8 +28,20 @@ module.exports = function(grunt) {
                 src: [firstAppPath + '/spec/mocks.js',
                       firstAppPath + '/common/js/**/*.js'],
                 options: {
+                    vendor: 'node_modules/grunt-jquery-builder/built/jquery-1.9.1.js',
                     specs: firstAppPath + '/spec/*Spec.js',
-                    helpers: firstAppPath + '/spec/*Helper.js'
+                    helpers: [firstAppPath + '/spec/*Helper.js',
+                              'node_modules/jasmine-jquery/lib/jasmine-jquery.js']
+                }
+            }
+        },
+        jquery: {
+            jasmine_jquery: {
+                output: "node_modules/grunt-jquery-builder/built",
+                versions: ["1.9.1"],
+                options: {
+                    prefix: "jquery-",
+                    minify: false
                 }
             }
         }
@@ -37,6 +49,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks("grunt-jquery-builder");
 
     grunt.registerTask('test', ['jshint', 'jasmine']);
     grunt.registerTask('default', ['test']);

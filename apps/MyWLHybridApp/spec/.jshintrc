@@ -1,5 +1,6 @@
 {
   "extends": "../../../.jshintrc",
   "browser": true,
-  "jasmine": true
+  "jasmine": true,
+  "jquery": true
 }
