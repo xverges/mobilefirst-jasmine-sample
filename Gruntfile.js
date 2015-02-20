@@ -33,6 +33,12 @@ module.exports = function(grunt) {
                     helpers: [firstAppPath + '/spec/*Helper.js',
                               'node_modules/jasmine-jquery/lib/jasmine-jquery.js']
                 }
+            },
+            userDataAdapter: {
+                src: 'adapters/UserDataAdapter/UserDataAdapter-impl.js',
+                options: {
+                    specs: 'test/js/spec/userDataAdapterSpec.js'
+                }
             }
         },
         jquery: {
