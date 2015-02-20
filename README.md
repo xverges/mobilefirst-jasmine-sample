@@ -2,13 +2,14 @@
 
 This project builds on the [developerWorks article *Unit test your 
 JavaScript code in IBM Worklight hybrid applications*](https://www.ibm.com/developerworks/community/blogs/worklight/entry/unit_test_your_javascript_code_in_ibm_worklight_hybrid_applications) 
+by [Mike Rheinheimer](https://twitter.com/mikerott)
 and takes different choices on tools. We move from Java-based tools
 dealing with JavaScript, to node.js-based tool, a landscape that is
 moving much faster and that makes plumbing simpler.
 
 ## node.js and npm
 
-The last step in this article deals with having Maven download
+The last step in this README deals with having Maven download
 in the project area all the proper versions of the tools used
 to test the JavaScript code in the project. However, it is
 more comfortable to use the tools as they are installed usually.
