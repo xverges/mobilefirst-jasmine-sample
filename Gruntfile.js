@@ -25,10 +25,10 @@ module.exports = function(grunt) {
         },
         jasmine: {
             firstApp: {
-                src: [firstAppPath + '/spec/mocks.js',
-                      firstAppPath + '/common/js/**/*.js'],
+                src: firstAppPath + '/common/js/**/*.js',
                 options: {
-                    vendor: 'node_modules/grunt-jquery-builder/built/jquery-1.9.1.js',
+                    vendor: ['node_modules/grunt-jquery-builder/built/jquery-1.9.1.js',
+                             'test/js/lib/wl.client-side.dummy.js'],
                     specs: firstAppPath + '/spec/*Spec.js',
                     helpers: [firstAppPath + '/spec/*Helper.js',
                               'node_modules/jasmine-jquery/lib/jasmine-jquery.js']
